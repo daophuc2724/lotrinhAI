@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lộ Trình Master — Đào Quang Phúc</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06060a;
+  --bg2: #0d0d14;
+  --surface: #10101a;
+  --surface2: #181825;
+  --surface3: #1e1e2e;
+  --border: #252535;
+  --border2: #2e2e42;
+  --accent: #4fffb0;
+  --accent-dim: rgba(79,255,176,0.12);
+  --accent-glow: rgba(79,255,176,0.25);
+  --violet: #8b5cf6;
+  --violet-dim: rgba(139,92,246,0.12);
+  --amber: #f59e0b;
+  --amber-dim: rgba(245,158,11,0.12);
+  --rose: #f43f5e;
+  --rose-dim: rgba(244,63,94,0.12);
+  --sky: #38bdf8;
+  --text: #c8c8d8;
+  --text-dim: #666680;
+  --text-bright: #f0f0ff;
+  --r: 4px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* ── CURSOR GLOW ── */
+.cursor-glow {
+  position: fixed;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79,255,176,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  transition: opacity 0.3s;
+}
+
+/* ── PROGRESS ── */
+#progress {
+  position: fixed; top:0; left:0;
+  height: 2px; width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  z-index: 9999;
+  transition: width 0.08s linear;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top:0; left:0; right:0;
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(6,6,10,0.85);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  z-index: 999;
+  transform: translateY(-100%);
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+nav.show { transform: translateY(0); }
+.nav-logo {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700; font-size: 13px;
+  color: var(--accent); letter-spacing: 0.04em;
+}
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a {
+  font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-dim); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--accent); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 64px 72px;
+  position: relative; overflow: hidden;
+}
+
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+.orb1 { width:700px;height:700px; top:-200px;right:-150px; background:radial-gradient(circle,rgba(79,255,176,0.09),transparent 70%); }
+.orb2 { width:500px;height:500px; bottom:-100px;left:-100px; background:radial-gradient(circle,rgba(139,92,246,0.1),transparent 70%); }
+.orb3 { width:300px;height:300px; top:40%;left:40%; background:radial-gradient(circle,rgba(245,158,11,0.05),transparent 70%); }
+
+.hero-tag {
+  font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 28px;
+  opacity: 0; animation: up 0.7s ease forwards 0.3s;
+}
+.hero-tag span { 
+  display: inline-block;
+  border: 1px solid rgba(79,255,176,0.3);
+  padding: 4px 12px; border-radius: 2px;
+}
+
+.hero-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  font-size: clamp(64px, 10vw, 140px);
+  line-height: 0.88;
+  color: var(--text-bright);
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+  opacity: 0; animation: up 0.7s ease forwards 0.5s;
+}
+.hero-name em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--accent), #00c896);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: italic; font-weight: 300;
+  font-size: clamp(14px, 1.8vw, 19px);
+  color: var(--text-dim); margin-bottom: 56px;
+  opacity: 0; animation: up 0.7s ease forwards 0.7s;
+}
+
+.hero-meta {
+  display: flex; gap: 0;
+  border: 1px solid var(--border);
+  width: fit-content;
+  opacity: 0; animation: up 0.7s ease forwards 0.9s;
+}
+.meta-item {
+  padding: 20px 36px;
+  border-right: 1px solid var(--border);
+}
+.meta-item:last-child { border-right: none; }
+.meta-num {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700; font-size: 36px;
+  color: var(--accent); line-height: 1;
+  display: block; margin-bottom: 4px;
+}
+.meta-label {
+  font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.hero-scroll {
+  position: absolute; bottom: 36px; right: 64px;
+  display: flex; align-items: center; gap: 14px;
+  color: var(--text-dim); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+  opacity: 0; animation: up 0.7s ease forwards 1.2s;
+  writing-mode: vertical-rl;
+}
+.scroll-line { width:1px; height:48px; background:var(--border2); }
+
+/* ── SECTION BASE ── */
+.section {
+  padding: 96px 64px;
+  max-width: 1160px; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+.section-tag {
+  font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-tag::before {
+  content: ''; display: block;
+  width: 24px; height: 1px; background: var(--accent);
+}
+.section-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700; font-size: clamp(38px, 5vw, 64px);
+  color: var(--text-bright); line-height: 1.05;
+  letter-spacing: -0.02em; margin-bottom: 52px;
+}
+
+hr.div {
+  border: none; border-top: 1px solid var(--border);
+  margin: 0 64px;
+}
+
+/* ── REALITY GRID ── */
+.r-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 48px;
+}
+.r-card {
+  background: var(--surface);
+  padding: 32px;
+  position: relative; overflow: hidden;
+  transition: background 0.3s;
+}
+.r-card:hover { background: var(--surface2); }
+.r-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.r-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+.r-label {
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  font-weight: 500;
+}
+.r-item {
+  display: flex; gap: 10px; align-items: baseline;
+  font-size: 12.5px; color: var(--text); margin-bottom: 9px;
+}
+.r-item::before { content: '→'; color: var(--text-dim); flex-shrink:0; font-size:11px; }
+.r-card.good .r-dot { background: var(--accent); }
+.r-card.good .r-label { color: var(--accent); }
+.r-card.bad .r-dot { background: var(--rose); }
+.r-card.bad .r-label { color: var(--rose); }
+.r-card.warm .r-dot { background: var(--amber); }
+.r-card.warm .r-label { color: var(--amber); }
+.r-card.info .r-dot { background: var(--violet); }
+.r-card.info .r-label { color: var(--violet); }
+
+/* ── CALLOUT ── */
+.callout {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-dim);
+  padding: 22px 28px;
+  margin-bottom: 32px;
+  font-size: 13px; line-height: 1.8;
+}
+.callout strong { color: var(--accent); font-weight: 500; }
+.callout.violet { border-color: var(--violet); background: var(--violet-dim); }
+.callout.violet strong { color: var(--violet); }
+.callout.amber { border-color: var(--amber); background: var(--amber-dim); }
+.callout.amber strong { color: var(--amber); }
+.callout.rose { border-color: var(--rose); background: var(--rose-dim); }
+.callout.rose strong { color: var(--rose); }
+
+/* ── PHASE TIMELINE ── */
+.timeline { position: relative; padding-left: 56px; }
+.timeline::before {
+  content: ''; position: absolute;
+  left: 18px; top:0; bottom:0; width:1px;
+  background: linear-gradient(to bottom, var(--accent), var(--violet), var(--amber), var(--rose));
+}
+.phase-node {
+  position: absolute; left: 0;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700; font-size: 13px;
+  color: var(--bg);
+}
+.ph1 { background: var(--accent); }
+.ph2 { background: var(--violet); }
+.ph3 { background: var(--amber); }
+
+/* ── TOOL CARDS ── */
+.tools-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 36px;
+}
+.tool-card {
+  background: var(--surface); padding: 24px;
+  transition: background 0.25s;
+}
+.tool-card:hover { background: var(--surface2); }
+.tool-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 600; color: var(--text-bright);
+  font-size: 15px; margin-bottom: 6px;
+}
+.tool-badge {
+  font-size: 9.5px; letter-spacing: 0.15em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 2px; margin-bottom: 10px;
+  display: inline-block;
+}
+.badge-easy { background: var(--accent-dim); color: var(--accent); }
+.badge-mid  { background: var(--amber-dim); color: var(--amber); }
+.badge-hard { background: var(--rose-dim); color: var(--rose); }
+.tool-desc { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+
+/* ── WEEK TABLE ── */
+.week-table {
+  border: 1px solid var(--border);
+  margin-bottom: 36px; overflow: hidden;
+}
+.wrow {
+  display: grid; grid-template-columns: 72px 110px 1fr 160px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+.wrow:last-child { border-bottom: none; }
+.wrow:hover:not(.whead) { background: var(--surface2); }
+.wrow.whead {
+  background: var(--surface2);
+  font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+.wcell {
+  padding: 16px 20px;
+  border-right: 1px solid var(--border);
+  font-size: 12.5px;
+}
+.wcell:last-child { border-right: none; }
+.wnum {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700; font-size: 22px; color: var(--border2); line-height: 1;
+}
+.wperiod { color: var(--text-dim); font-size: 11px; line-height: 1.5; }
+.wgoal {
+  font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase;
+  font-weight: 500; line-height: 1.4;
+}
+.ph1c { color: var(--accent); }
+.ph2c { color: var(--violet); }
+.ph3c { color: var(--amber); }
+
+/* ── CHECKLIST NEW ── */
+.phase-section { margin-bottom: 48px; }
+.phase-section-title {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700; font-size: 20px; color: var(--text-bright);
+  margin-bottom: 16px; display: flex; align-items: center; gap: 14px;
+}
+.phase-section-title .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+.checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ci {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.2s; user-select: none;
+}
+.ci:hover { border-color: var(--border2); }
+.ci.done { border-color: var(--accent); background: rgba(79,255,176,0.04); }
+.cbox {
+  width: 16px; height: 16px; flex-shrink: 0;
+  border: 1.5px solid var(--border2); margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; border-radius: 2px;
+}
+.ci.done .cbox { background: var(--accent); border-color: var(--accent); }
+.cmark { display:none; color: var(--bg); font-size:10px; font-weight:bold; }
+.ci.done .cmark { display:block; }
+.ctext { font-size: 12.5px; color: var(--text); transition: color 0.2s; }
+.ci.done .ctext { color: var(--text-dim); text-decoration: line-through; }
+
+/* ── PORTFOLIO ── */
+.port-grid { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+.port-item {
+  background: var(--surface);
+  display: grid; grid-template-columns: 56px 1fr auto;
+  align-items: center; gap: 28px; padding: 28px;
+  transition: all 0.3s;
+}
+.port-item:hover { background: var(--surface2); transform: translateX(4px); }
+.port-n {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700; font-size: 40px; color: var(--border2); line-height: 1;
+}
+.port-name {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 600; color: var(--text-bright); font-size: 16px; margin-bottom: 4px;
+}
+.port-desc { font-size: 11.5px; color: var(--text-dim); }
+.port-ph {
+  font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+  padding: 5px 12px; border: 1px solid currentColor; white-space: nowrap;
+  border-radius: 2px;
+}
+
+/* ── INCOME TABLE ── */
+.income-table { border: 1px solid var(--border); overflow: hidden; margin-bottom: 36px; }
+.irow {
+  display: grid; grid-template-columns: 2.2fr 1fr 1.3fr 1fr;
+  border-bottom: 1px solid var(--border); transition: background 0.2s;
+}
+.irow:last-child { border-bottom: none; }
+.irow:hover:not(.ihead) { background: var(--surface2); }
+.irow.ihead {
+  background: var(--surface2);
+  font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim);
+}
+.icell { padding: 16px 20px; border-right: 1px solid var(--border); font-size: 12.5px; }
+.icell:last-child { border-right: none; }
+.iamt { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; color: var(--amber); }
+
+/* ── RULES ── */
+.rules { display: grid; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+.rule {
+  background: var(--surface);
+  display: grid; grid-template-columns: 72px 1fr;
+  overflow: hidden; transition: background 0.2s;
+}
+.rule:hover { background: var(--surface2); }
+.rule-n {
+  padding: 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700; font-size: 26px; color: var(--accent);
+  border-right: 1px solid var(--border);
+  background: var(--surface2);
+}
+.rule-t { padding: 20px 26px; font-size: 12.5px; line-height: 1.75; }
+.rule-t strong { color: var(--accent); font-weight: 500; }
+
+/* ── RESOURCES ── */
+.res-tabs { display: flex; gap: 1px; background: var(--border); border: 1px solid var(--border); border-bottom: none; margin-bottom: 0; }
+.res-tab {
+  flex: 1; padding: 13px 20px; background: var(--surface);
+  font-size: 10.5px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-dim); cursor: pointer; transition: all 0.2s;
+  border: none; font-family: 'JetBrains Mono', monospace;
+}
+.res-tab.active { background: var(--surface2); color: var(--accent); }
+.res-tab:hover:not(.active) { color: var(--text); }
+.res-panel { display: none; }
+.res-panel.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+.res-card {
+  background: var(--surface);
+  display: flex; flex-direction: column;
+  transition: background 0.2s;
+}
+.res-card:hover { background: var(--surface2); }
+.res-top { padding: 20px 20px 0; display: flex; gap: 14px; align-items: flex-start; }
+.res-icon { font-size: 24px; line-height: 1; }
+.res-name { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; color: var(--text-bright); font-size: 14px; margin-bottom: 3px; }
+.res-plat { font-size: 11px; color: var(--text-dim); }
+.res-badges { padding: 10px 20px 0; display: flex; flex-wrap: wrap; gap: 5px; }
+.rbadge {
+  font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 2px;
+}
+.rb-free { background: var(--accent-dim); color: var(--accent); }
+.rb-vi   { background: var(--amber-dim); color: var(--amber); }
+.rb-en   { background: var(--violet-dim); color: var(--violet); }
+.rb-mid  { background: var(--amber-dim); color: var(--amber); }
+.rb-beg  { background: var(--accent-dim); color: var(--accent); }
+.res-desc { flex:1; padding: 10px 20px; font-size: 11.5px; color: var(--text-dim); line-height: 1.6; }
+.res-bottom { padding: 0 20px 20px; }
+.res-ptag { font-size: 9.5px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 7px; }
+.res-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: var(--surface3);
+  border: 1px solid var(--border2); color: var(--text);
+  text-decoration: none; font-size: 11.5px; font-family: 'JetBrains Mono', monospace;
+  transition: all 0.2s;
+}
+.res-btn:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+/* ── CHECKPOINT BADGE ── */
+.checkpoint {
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  padding: 20px 28px;
+  margin-bottom: 32px;
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.cp-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.cp-title { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; color: var(--amber); font-size: 13px; margin-bottom: 6px; letter-spacing: 0.05em; }
+.cp-body { font-size: 12px; color: var(--text-dim); line-height: 1.7; }
+.cp-body strong { color: var(--text); font-weight: 400; }
+
+/* ── ENGLISH GRID ── */
+.eng-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 32px; }
+.eng-card { background: var(--surface); padding: 28px; }
+.eng-title { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; color: var(--text-bright); font-size: 14px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.eng-item { display: flex; gap: 10px; margin-bottom: 9px; font-size: 12.5px; }
+.eng-arr { color: var(--accent); flex-shrink: 0; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 64px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.footer-quote {
+  font-family: 'JetBrains Mono', monospace; font-style: italic; font-weight: 300;
+  font-size: 18px; color: var(--text-dim); margin-bottom: 16px;
+}
+.footer-name {
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700;
+  font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes up {
+  from { opacity:0; transform: translateY(22px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0; transform: translateY(18px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* ── MOBILE ── */
+@media(max-width:768px) {
+  .hero { padding: 0 24px 56px; }
+  .section { padding: 64px 24px; }
+  hr.div { margin: 0 24px; }
+  nav { padding: 0 24px; }
+  .nav-links { gap: 16px; }
+  .r-grid { grid-template-columns: 1fr; }
+  .hero-meta { flex-direction: column; width: 100%; }
+  .meta-item { border-right: none; border-bottom: 1px solid var(--border); }
+  .meta-item:last-child { border-bottom: none; }
+  .wrow { grid-template-columns: 56px 1fr; }
+  .wrow .wcell:nth-child(3),.wrow .wcell:nth-child(4) { display:none; }
+  .wrow.whead .wcell:nth-child(3),.wrow.whead .wcell:nth-child(4) { display:none; }
+  .checklist { grid-template-columns: 1fr; }
+  .irow { grid-template-columns: 2fr 1fr; }
+  .irow .icell:nth-child(3),.irow .icell:nth-child(4) { display:none; }
+  .port-item { grid-template-columns: 1fr; gap: 10px; }
+  .eng-grid { grid-template-columns: 1fr; }
+  .tools-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cg"></div>
+<div id="progress"></div>
+
+<nav id="nav">
+  <div class="nav-logo">DQP · AI Workflow</div>
+  <ul class="nav-links">
+    <li><a href="#reality">Thực Tế</a></li>
+    <li><a href="#phase1">Phase 1</a></li>
+    <li><a href="#phase2">Phase 2</a></li>
+    <li><a href="#phase3">Phase 3</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#resources">Tài Nguyên</a></li>
+    <li><a href="#checklist">Checklist</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-orb orb3"></div>
+
+  <p class="hero-tag"><span>Lộ Trình Master · Tháng 4/2026 · Thiết kế riêng cho Đào Quang Phúc</span></p>
+  <h1 class="hero-name">Đào<br><em>Quang Phúc</em></h1>
+  <p class="hero-subtitle">// Process Automation & AI Workflow Specialist</p>
+
+  <div class="hero-meta">
+    <div class="meta-item">
+      <span class="meta-num">3</span>
+      <span class="meta-label">Tháng nền tảng</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-num">5</span>
+      <span class="meta-label">Demo portfolio</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-num">10+</span>
+      <span class="meta-label">Tools thực chiến</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-num">0</span>
+      <span class="meta-label">Cần biết code</span>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    cuộn xuống
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- ═══════ REALITY ═══════ -->
+<section class="section" id="reality">
+  <p class="section-tag">Điểm xuất phát</p>
+  <h2 class="section-title">Đánh giá<br>thực tế</h2>
+
+  <div class="r-grid reveal">
+    <div class="r-card good">
+      <div class="r-card-top"><div class="r-dot"></div><div class="r-label">Lợi thế thật — bạn đang có</div></div>
+      <div class="r-item">Hiểu business ops từ bên trong (DKSH)</div>
+      <div class="r-item">Excel thực chiến với data lớn (100K–250K dòng)</div>
+      <div class="r-item">Đã làm KPI, territory mapping, CRM thật</div>
+      <div class="r-item">Tư duy quy trình — hiểu pain point của Sales team</div>
+      <div class="r-item">3 tháng support tài chính — window quý giá</div>
+    </div>
+    <div class="r-card bad">
+      <div class="r-card-top"><div class="r-dot"></div><div class="r-label">Điểm cần nhìn thẳng</div></div>
+      <div class="r-item">Tiếng Anh B1 — cần tăng lên đủ để <em>viết</em> proposal quốc tế</div>
+      <div class="r-item">SQL chỉ vài câu đơn giản — ổn, bổ sung sau Phase 2</div>
+      <div class="r-item">Chưa có portfolio — đây là ưu tiên số 1</div>
+      <div class="r-item">Upwork/Fiverr mất 3–6 tháng đầu để build review</div>
+    </div>
+    <div class="r-card warm">
+      <div class="r-card-top"><div class="r-dot"></div><div class="r-label">Hướng đúng nhất cho bạn</div></div>
+      <div class="r-item">AI Automation (Make.com + LLM) — không cần code</div>
+      <div class="r-item">Niche: Sales/CRM automation — đúng background DKSH</div>
+      <div class="r-item">Tìm client VN nội địa trước, rồi mới scale quốc tế</div>
+      <div class="r-item">Timeline thực tế: income ổn sau 6–9 tháng, không phải 3</div>
+    </div>
+    <div class="r-card info">
+      <div class="r-card-top"><div class="r-dot"></div><div class="r-label">Tiếng Anh — cần bao nhiêu?</div></div>
+      <div class="r-item">Đọc error message — quan trọng nhất</div>
+      <div class="r-item">Viết proposal Upwork — 30 phút/ngày, dùng Claude sửa</div>
+      <div class="r-item">Chat async với client nước ngoài — B1 là đủ bắt đầu</div>
+      <div class="r-item">Dùng AI dịch tài liệu kỹ thuật — không cần dịch tay</div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- ═══════ PHASE 1 ═══════ -->
+<section class="section" id="phase1">
+  <p class="section-tag">Giai đoạn 1 · Tháng 5–7/2026</p>
+  <h2 class="section-title">Nền tảng<br>Automation</h2>
+
+  <div class="callout reveal">
+    Mục tiêu: Xây được <strong>2 workflow thật sự chạy được</strong>, có dashboard đẹp, có demo video. Đây là nền tảng để xin việc tháng 7 và nhận freelance đầu tiên. Không cần biết gì trước — Make.com là kéo thả hoàn toàn.
+  </div>
+
+  <!-- CHECKPOINT GO/NO-GO -->
+  <div class="checkpoint reveal">
+    <div class="cp-icon">🚦</div>
+    <div>
+      <div class="cp-title">Checkpoint cuối Phase 1 — Go / No-Go</div>
+      <div class="cp-body">Chỉ chuyển sang Phase 2 khi đã đạt <strong>cả 3 điều</strong>: (1) ít nhất 1 demo đã đăng LinkedIn và nhận được phản hồi thật, (2) workflow AI tự gửi mail chạy ổn định 2 tuần, (3) cảm thấy thoải mái giải thích workflow cho người không biết IT. Chưa đủ → thêm 2 tuần ở Phase 1, không sao.</div>
+    </div>
+  </div>
+
+  <div class="callout reveal" style="border-color:var(--violet);background:var(--violet-dim);margin-bottom:32px;">
+    <strong style="color:var(--violet)">Tư duy cốt lõi:</strong> Toàn bộ automation chỉ là biến thể của 4 khái niệm —
+    <strong style="color:var(--violet)">TRIGGER</strong> (điều gì kích hoạt?) →
+    <strong style="color:var(--violet)">ACTION</strong> (sau đó làm gì?) →
+    <strong style="color:var(--violet)">CONDITION</strong> (nếu A thì B, không thì C) →
+    <strong style="color:var(--violet)">LOOP</strong> (lặp với từng dòng). Hiểu 4 thứ này là hiểu mọi tool.
+  </div>
+
+  <p class="reveal" style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;color:var(--text-bright);margin-bottom:16px;">Tools cần học — Phase 1</p>
+  <div class="tools-grid reveal">
+    <div class="tool-card">
+      <div class="tool-name">Make.com</div>
+      <div class="tool-badge badge-easy">● Dễ — kéo thả</div>
+      <div class="tool-desc">Tool chính. Kết nối app, tạo workflow tự động. Không cần code. Học 2 tuần đầu đến khi thật thông thạo rồi mới sang bước tiếp.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Google Sheets</div>
+      <div class="tool-badge badge-easy">● Rất dễ — đã biết</div>
+      <div class="tool-desc">Database trung tâm, lưu data từ mọi nguồn. Bạn đã có base mạnh từ DKSH.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Looker Studio</div>
+      <div class="tool-badge badge-easy">● Dễ — kéo thả</div>
+      <div class="tool-desc">Dashboard đẹp tự cập nhật. Kết nối Sheets. Hoàn toàn miễn phí từ Google.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Claude API</div>
+      <div class="tool-badge badge-easy">● Dễ — qua Make.com</div>
+      <div class="tool-desc">Gọi AI từ workflow. Không cần code — Make.com có HTTP module kéo thả. Học sau tuần 5.</div>
+    </div>
+  </div>
+
+  <p class="reveal" style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;color:var(--text-bright);margin-bottom:16px;">Lịch học chi tiết theo tuần</p>
+  <div class="week-table reveal">
+    <div class="wrow whead">
+      <div class="wcell">Tuần</div>
+      <div class="wcell">Thời gian</div>
+      <div class="wcell">Làm gì cụ thể</div>
+      <div class="wcell">Mục tiêu xong</div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">01</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 1<br>Tháng 5</div></div>
+      <div class="wcell">Tạo tài khoản Make.com miễn phí. Xem 5 video "Make.com Tutorial" tiếng Việt. Thực hành duy nhất: kết nối Google Form → Google Sheets tự động. Không làm thêm gì khác tuần này.</div>
+      <div class="wcell"><div class="wgoal ph1c">Form → Sheet chạy được ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">02</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 2<br>Tháng 5</div></div>
+      <div class="wcell">Thêm bước 3: khi Sheet có dòng mới → Make.com tự gửi Gmail thông báo. Học Variables (lấy tên, email điền vào mail). Dùng data nghiên cứu khoa học của bạn làm input thật.</div>
+      <div class="wcell"><div class="wgoal ph1c">Form → Sheet → Gmail ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">03</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 3<br>Tháng 5</div></div>
+      <div class="wcell">Học Looker Studio: kết nối Google Sheets. Tạo 3 chart cơ bản: Bar, Line, Scorecard. Thiết kế 1 dashboard KPI đơn giản (tổng số, trung bình, xu hướng theo thời gian).</div>
+      <div class="wcell"><div class="wgoal ph1c">Dashboard tự cập nhật ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">04</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 4<br>Tháng 5</div></div>
+      <div class="wcell">Kết hợp hoàn chỉnh: Make.com thu data → Sheets → Looker Studio dashboard đẹp. Quay video màn hình 60 giây. Đăng LinkedIn: "Tự động hóa [X] tiết kiệm [Y] giờ/tuần".</div>
+      <div class="wcell"><div class="wgoal ph1c">Demo #1 + LinkedIn ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">05</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 1<br>Tháng 6</div></div>
+      <div class="wcell">Make.com nâng cao: Filters (điều kiện), Routers (rẽ nhánh), Iterator (lặp qua danh sách). Bài tập: phân loại data — nếu doanh số > 100tr thì gửi mail khác, nếu không thì làm khác.</div>
+      <div class="wcell"><div class="wgoal ph1c">Workflow có điều kiện ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">06</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 2<br>Tháng 6</div></div>
+      <div class="wcell">Xây Demo #2 từ data DKSH thật: tự động tổng hợp KPI Call Validation theo tuần, tính % hoàn thành, so sánh với target. Dashboard Looker Studio giống báo cáo thật nhất có thể.</div>
+      <div class="wcell"><div class="wgoal ph1c">Demo #2 — portfolio chất ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">07–08</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 3–4<br>Tháng 6</div></div>
+      <div class="wcell">Thêm AI vào Demo #2: Make.com → Claude API (HTTP module) → AI tự viết nhận xét phân tích KPI → tự gửi mail báo cáo mỗi thứ Hai. Stuck ở đâu → hỏi Claude ngay, đừng mò quá 30 phút.</div>
+      <div class="wcell"><div class="wgoal ph1c">Workflow AI tự động ✓</div></div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- ═══════ PHASE 2 ═══════ -->
+<section class="section" id="phase2">
+  <p class="section-tag">Giai đoạn 2 · Tháng 8–10/2026</p>
+  <h2 class="section-title">AI Integration<br>— Trở thành người hiếm</h2>
+
+  <div class="callout violet reveal">
+    Biết tích hợp AI vào workflow chuyên nghiệp. <strong>Prompt Engineering đủ tốt</strong> để AI ra kết quả nhất quán. Đây là kỹ năng phân biệt bạn với 90% người làm automation thông thường — thứ không ai dạy trong trường.
+  </div>
+
+  <div class="checkpoint reveal">
+    <div class="cp-icon">🚦</div>
+    <div>
+      <div class="cp-title">Checkpoint cuối Phase 2 — Go / No-Go</div>
+      <div class="cp-body">Chỉ sang Phase 3 khi: <strong>Demo #3 và Demo #4 đã đăng LinkedIn</strong>, ít nhất 1 trong 2 có người nhắn tin hỏi thêm, và bạn cảm thấy tự tin giải thích kỹ thuật bằng tiếng Anh trong vòng 3–5 câu. Chưa đủ → dành thêm 2 tuần hoàn thiện demo trước.</div>
+    </div>
+  </div>
+
+  <p class="reveal" style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;color:var(--text-bright);margin-bottom:16px;">4 nguyên tắc Prompt Engineering — học đầu tiên</p>
+  <div class="r-grid reveal" style="grid-template-columns:1fr 1fr 1fr 1fr;margin-bottom:32px;">
+    <div class="r-card good">
+      <div class="r-card-top"><div class="r-dot"></div><div class="r-label">ROLE</div></div>
+      <div class="r-item" style="font-size:12px;">"Bạn là chuyên gia phân tích KPI bán hàng với 10 năm kinh nghiệm..."</div>
+    </div>
+    <div class="r-card info">
+      <div class="r-card-top"><div class="r-dot"></div><div class="r-label">CONTEXT</div></div>
+      <div class="r-item" style="font-size:12px;">"Dữ liệu dưới đây là Call Validation của 50 MR trong tuần 15..."</div>
+    </div>
+    <div class="r-card warm">
+      <div class="r-card-top"><div class="r-dot"></div><div class="r-label">TASK</div></div>
+      <div class="r-item" style="font-size:12px;">"Phân tích điểm mạnh, điểm yếu, đề xuất 3 hành động cụ thể"</div>
+    </div>
+    <div class="r-card bad">
+      <div class="r-card-top"><div class="r-dot"></div><div class="r-label">FORMAT</div></div>
+      <div class="r-item" style="font-size:12px;">"Trả lời tiếng Việt, bullet points, tối đa 200 từ, có số liệu cụ thể"</div>
+    </div>
+  </div>
+
+  <p class="reveal" style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;color:var(--text-bright);margin-bottom:16px;">Tools cần học — Phase 2</p>
+  <div class="tools-grid reveal">
+    <div class="tool-card">
+      <div class="tool-name">Claude API / HTTP</div>
+      <div class="tool-badge badge-mid">● Trung bình — qua Make</div>
+      <div class="tool-desc">Gọi AI từ Make.com để phân tích, sinh báo cáo, phân loại dữ liệu tự động.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Flowise</div>
+      <div class="tool-badge badge-easy">● Dễ — kéo thả</div>
+      <div class="tool-desc">Xây AI chatbot từ tài liệu riêng. Không cần code. Thích hợp demo cho SME.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">n8n</div>
+      <div class="tool-badge badge-mid">● Trung bình</div>
+      <div class="tool-desc">Automation mạnh hơn Make.com. Self-host được. Phổ biến với client quốc tế.</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-name">Airtable</div>
+      <div class="tool-badge badge-easy">● Dễ</div>
+      <div class="tool-desc">Database linh hoạt hơn Sheets. Kết hợp Make.com + AI rất tốt cho SME.</div>
+    </div>
+  </div>
+
+  <div class="week-table reveal">
+    <div class="wrow whead">
+      <div class="wcell">Tuần</div>
+      <div class="wcell">Thời gian</div>
+      <div class="wcell">Làm gì cụ thể</div>
+      <div class="wcell">Mục tiêu xong</div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">01</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 1<br>Tháng 8</div></div>
+      <div class="wcell">Đọc Prompt Engineering Guide của Anthropic (dùng Claude dịch từng phần). Thực hành viết 10 prompt khác nhau cho cùng 1 task và so sánh output. Ghi chú lại pattern nào ra kết quả tốt nhất.</div>
+      <div class="wcell"><div class="wgoal ph2c">Prompt nhất quán ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">02</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 2<br>Tháng 8</div></div>
+      <div class="wcell">Nâng cấp Demo #2: cải thiện prompt AI phân tích KPI, thêm so sánh tuần này vs tuần trước, thêm cảnh báo tự động nếu KPI dưới target.</div>
+      <div class="wcell"><div class="wgoal ph2c">Demo #2 nâng cấp ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">03–04</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 3–4<br>Tháng 8</div></div>
+      <div class="wcell">Học Flowise: cài đặt, kết nối knowledge base (PDF), xây chatbot từ tài liệu. Dùng tài liệu hướng dẫn EchoPlus từ DKSH làm knowledge base thật sự.</div>
+      <div class="wcell"><div class="wgoal ph2c">AI Chatbot từ tài liệu ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">05–06</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 1–2<br>Tháng 9</div></div>
+      <div class="wcell">Học n8n cloud miễn phí, hiểu khác biệt với Make.com. Xây lại 1 workflow Make.com sang n8n để so sánh. Học Code node — AI viết code thay, bạn chỉ copy và test.</div>
+      <div class="wcell"><div class="wgoal ph2c">Biết cả Make + n8n ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">07–08</div></div>
+      <div class="wcell"><div class="wperiod">Tuần 3–4<br>Tháng 9</div></div>
+      <div class="wcell">Xây Demo #3: AI tự động phân loại + tóm tắt email/báo cáo → lưu Airtable → dashboard Looker Studio theo category. Project này bán được cho SME Việt Nam ngay.</div>
+      <div class="wcell"><div class="wgoal ph2c">Demo #3 AI Classifier ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum">09–12</div></div>
+      <div class="wcell"><div class="wperiod">Tháng 10</div></div>
+      <div class="wcell">Demo #4 — dự án lớn nhất Phase 2: hệ thống theo dõi hiệu suất đội MR dược theo tuần, AI nhận xét, dashboard đẹp, alert tự động. Nhắm thẳng vào DKSH/Pharma/FMCG.</div>
+      <div class="wcell"><div class="wgoal ph2c">Demo #4 Industry-specific ✓</div></div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- ═══════ PHASE 3 ═══════ -->
+<section class="section" id="phase3">
+  <p class="section-tag">Giai đoạn 3 · Tháng 11/2026 – 2/2027</p>
+  <h2 class="section-title">Freelance<br>& Thu nhập thật</h2>
+
+  <div class="callout amber reveal">
+    Nhận và hoàn thành ít nhất 2–3 dự án freelance trả tiền thật. Xây reputation trên LinkedIn. Hiểu cách định giá và deliver dự án chuyên nghiệp. <strong>Project đầu tiên: chấp nhận lấy ít hoặc miễn phí để có case study thật.</strong>
+  </div>
+
+  <div class="checkpoint reveal">
+    <div class="cp-icon">💡</div>
+    <div>
+      <div class="cp-title">Chiến lược tìm client — đừng chỉ dựa vào Upwork</div>
+      <div class="cp-body">Upwork/Fiverr mất 3–6 tháng build review. Song song đó: <strong>FB group "Automation Vietnam"</strong> — offer tư vấn miễn phí 30 phút để lấy case study; <strong>mạng lưới cũ DKSH</strong> — biết ai đang cần automation không?; <strong>LinkedIn DM</strong> — chủ SME Pharma/FMCG ở VN là target lý tưởng. Client nội địa dễ convert hơn giai đoạn đầu rất nhiều.</div>
+    </div>
+  </div>
+
+  <p class="reveal" style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:17px;color:var(--text-bright);margin-bottom:16px;">Bảng định giá thực tế</p>
+  <div class="income-table reveal">
+    <div class="irow ihead">
+      <div class="icell">Loại dự án</div>
+      <div class="icell">Thị trường VN</div>
+      <div class="icell">Thị trường quốc tế</div>
+      <div class="icell">Thời gian</div>
+    </div>
+    <div class="irow">
+      <div class="icell">Workflow cơ bản (3–5 bước)</div>
+      <div class="icell"><span class="iamt">5–15 triệu</span></div>
+      <div class="icell"><span class="iamt">$150–400</span></div>
+      <div class="icell">3–7 ngày</div>
+    </div>
+    <div class="irow">
+      <div class="icell">Dashboard + Automation</div>
+      <div class="icell"><span class="iamt">15–35 triệu</span></div>
+      <div class="icell"><span class="iamt">$400–800</span></div>
+      <div class="icell">1–2 tuần</div>
+    </div>
+    <div class="irow">
+      <div class="icell">AI Chatbot + Workflow tích hợp</div>
+      <div class="icell"><span class="iamt">30–60 triệu</span></div>
+      <div class="icell"><span class="iamt">$800–2,000</span></div>
+      <div class="icell">2–4 tuần</div>
+    </div>
+    <div class="irow">
+      <div class="icell">Retainer bảo trì hàng tháng</div>
+      <div class="icell"><span class="iamt">3–10 triệu/tháng</span></div>
+      <div class="icell"><span class="iamt">$100–300/tháng</span></div>
+      <div class="icell">Ongoing — thụ động</div>
+    </div>
+  </div>
+
+  <div class="week-table reveal">
+    <div class="wrow whead">
+      <div class="wcell">Giai đoạn</div>
+      <div class="wcell">Thời gian</div>
+      <div class="wcell">Task cụ thể</div>
+      <div class="wcell">Mục tiêu</div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum" style="color:var(--amber)">A</div></div>
+      <div class="wcell"><div class="wperiod">T11<br>Tuần 1–2</div></div>
+      <div class="wcell">Tạo Upwork profile: viết bio, upload 2–3 portfolio demo đẹp nhất, đặt giá khởi điểm $50–80/workflow để build review đầu tiên. Tạo Fiverr gig. Đồng thời reach out 5 người trong network cũ ở VN.</div>
+      <div class="wcell"><div class="wgoal ph3c">Profile active + Lead VN ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum" style="color:var(--amber)">B</div></div>
+      <div class="wcell"><div class="wperiod">T11<br>Tuần 3–4</div></div>
+      <div class="wcell">Post LinkedIn 2 lần/tuần: case study ngắn, tip automation, demo nhỏ. Không cần hay — cần đều. Đăng FB group "Automation Vietnam", offer tư vấn miễn phí 30 phút cho 3 người đầu tiên.</div>
+      <div class="wcell"><div class="wgoal ph3c">Có lead đầu tiên ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum" style="color:var(--amber)">C</div></div>
+      <div class="wcell"><div class="wperiod">Tháng 12</div></div>
+      <div class="wcell">Nhận và hoàn thành dự án freelance đầu tiên — dù nhỏ. Document lại: yêu cầu ban đầu, giải pháp, kết quả đo được. Đây là case study thật để đưa vào portfolio.</div>
+      <div class="wcell"><div class="wgoal ph3c">Freelance #1 done ✓</div></div>
+    </div>
+    <div class="wrow">
+      <div class="wcell"><div class="wnum" style="color:var(--amber)">D</div></div>
+      <div class="wcell"><div class="wperiod">T1–2<br>2027</div></div>
+      <div class="wcell">Đề xuất retainer từ client đầu tiên: gói bảo trì 3–5 triệu/tháng. Song song nhận freelance #2. Đây là lúc thu nhập thụ động thật sự bắt đầu hình thành.</div>
+      <div class="wcell"><div class="wgoal ph3c">1 retainer cố định ✓</div></div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- ═══════ PORTFOLIO ═══════ -->
+<section class="section" id="portfolio">
+  <p class="section-tag">5 Demo cần có</p>
+  <h2 class="section-title">Portfolio<br>sau 6 tháng</h2>
+
+  <div class="callout reveal">
+    Mỗi demo phải có: <strong>video 60 giây</strong> quay màn hình thật, <strong>bài LinkedIn</strong> mô tả vấn đề + giải pháp + kết quả đo được. Không có 2 thứ này thì demo chưa hoàn chỉnh — dù workflow chạy tốt đến đâu.
+  </div>
+
+  <div class="port-grid reveal">
+    <div class="port-item">
+      <div class="port-n">01</div>
+      <div>
+        <div class="port-name">Auto Form-to-Report Pipeline</div>
+        <div class="port-desc">Google Form → Sheets → Dashboard Looker Studio tự cập nhật. Baseline demo đầu tiên.</div>
+      </div>
+      <div class="port-ph p-ph1">Phase 1</div>
+    </div>
+    <div class="port-item">
+      <div class="port-n">02</div>
+      <div>
+        <div class="port-name">AI KPI Weekly Digest</div>
+        <div class="port-desc">Tổng hợp KPI Call Validation MR → AI phân tích → email report mỗi thứ Hai. Thật 100% từ DKSH.</div>
+      </div>
+      <div class="port-ph p-ph1">Phase 1–2</div>
+    </div>
+    <div class="port-item">
+      <div class="port-n">03</div>
+      <div>
+        <div class="port-name">Smart Email Classifier</div>
+        <div class="port-desc">AI tự phân loại + tóm tắt email → Airtable → dashboard theo category. Bán được cho SME ngay.</div>
+      </div>
+      <div class="port-ph p-ph2">Phase 2</div>
+    </div>
+    <div class="port-item">
+      <div class="port-n">04</div>
+      <div>
+        <div class="port-name">Pharma MR Performance Tracker</div>
+        <div class="port-desc">Hệ thống theo dõi hiệu suất đội MR dược theo tuần, AI nhận xét, alert tự động. Industry-specific.</div>
+      </div>
+      <div class="port-ph p-ph2">Phase 2</div>
+    </div>
+    <div class="port-item">
+      <div class="port-n">05</div>
+      <div>
+        <div class="port-name">AI Chatbot từ tài liệu nội bộ</div>
+        <div class="port-desc">Flowise chatbot được train từ PDF tài liệu công ty. Client hỏi → AI trả lời chính xác. Demo bằng EchoPlus DKSH.</div>
+      </div>
+      <div class="port-ph p-ph2">Phase 2</div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- ═══════ ENGLISH ═══════ -->
+<section class="section" id="english">
+  <p class="section-tag">Kỹ năng song song</p>
+  <h2 class="section-title">Tiếng Anh<br>thực chiến</h2>
+
+  <div class="callout rose reveal">
+    <strong>Nâng từ "15 phút" lên 30 phút/ngày</strong> — không nhiều, nhưng tập trung vào <strong>kỹ năng viết</strong>. Vì Upwork/Fiverr đánh giá bạn qua đoạn proposal đầu tiên. Dùng Claude sửa proposal draft — đây là ROI cao nhất với mục tiêu quốc tế.
+  </div>
+
+  <div class="eng-grid reveal">
+    <div class="eng-card">
+      <div class="eng-title">✅ Cần học — có ROI thực tế</div>
+      <div class="eng-item"><span class="eng-arr">→</span> Đọc error message (critical nhất)</div>
+      <div class="eng-item"><span class="eng-arr">→</span> Viết Upwork proposal ngắn gọn</div>
+      <div class="eng-item"><span class="eng-arr">→</span> Chat async với client (email/message)</div>
+      <div class="eng-item"><span class="eng-arr">→</span> Giải thích kỹ thuật trong 3–5 câu đơn giản</div>
+      <div class="eng-item"><span class="eng-arr">→</span> Đọc tài liệu tool (Make.com, n8n docs)</div>
+    </div>
+    <div class="eng-card">
+      <div class="eng-title">📅 Kế hoạch 30 phút/ngày</div>
+      <div class="eng-item"><span class="eng-arr">→</span> 10 phút: đọc 1 bài kỹ thuật ngắn (dev.to, medium)</div>
+      <div class="eng-item"><span class="eng-arr">→</span> 10 phút: viết 1 đoạn tóm tắt bằng tiếng Anh</div>
+      <div class="eng-item"><span class="eng-arr">→</span> 10 phút: nhờ Claude sửa và học từ sửa lỗi</div>
+      <div class="eng-item"><span class="eng-arr">→</span> Tuần 1 lần: viết draft proposal cho 1 job Upwork thật</div>
+      <div class="eng-item"><span class="eng-arr">→</span> Không cần hoàn hảo — cần đủ để client tin tưởng</div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- ═══════ RESOURCES ═══════ -->
+<section class="section" id="resources">
+  <p class="section-tag">Nguồn học</p>
+  <h2 class="section-title">Tài nguyên<br>đã chọn lọc</h2>
+
+  <div class="res-tabs">
+    <button class="res-tab active" onclick="switchTab('tab1',this)">Phase 1</button>
+    <button class="res-tab" onclick="switchTab('tab2',this)">Phase 2</button>
+    <button class="res-tab" onclick="switchTab('tab3',this)">Cộng đồng</button>
+    <button class="res-tab" onclick="switchTab('tab4',this)">Chứng chỉ</button>
+  </div>
+
+  <div class="res-panel active" id="tab1">
+    <div class="res-card">
+      <div class="res-top"><div class="res-icon">🎬</div><div><div class="res-name">Make.com Tutorial tiếng Việt</div><div class="res-plat">YouTube · Tìm "Make.com tiếng Việt 2025"</div></div></div>
+      <div class="res-badges"><span class="rbadge rb-free">Miễn phí</span><span class="rbadge rb-vi">Tiếng Việt</span><span class="rbadge rb-beg">Beginner</span></div>
+      <div class="res-desc">Bắt đầu tại đây. Xem 5 video đầu tiên để có feel với Make.com trước khi làm theo lịch học.</div>
+      <div class="res-bottom"><div class="res-ptag">▸ Phase 1 Tuần 1 · Bắt đầu ngay</div><a class="res-btn" href="https://youtube.com/results?search_query=make.com+tutorial+ti%E1%BA%BFng+vi%E1%BB%87t+2025" target="_blank">Tìm kiếm YouTube <span>→</span></a></div>
+    </div>
+    <div class="res-card">
+      <div class="res-top"><div class="res-icon">🎓</div><div><div class="res-name">Make.com Academy</div><div class="res-plat">academy.make.com · Chính thức</div></div></div>
+      <div class="res-badges"><span class="rbadge rb-free">Miễn phí</span><span class="rbadge rb-en">Tiếng Anh</span><span class="rbadge rb-beg">Beginner</span></div>
+      <div class="res-desc">Khóa học chính thức từ Make.com. Có subtitle, video chậm rõ ràng. Học song song khi xong YouTube.</div>
+      <div class="res-bottom"><div class="res-ptag">▸ Phase 1 · Tuần 2 trở đi</div><a class="res-btn" href="https://academy.make.com" target="_blank">Vào Make Academy <span>→</span></a></div>
+    </div>
+    <div class="res-card">
+      <div class="res-top"><div class="res-icon">📊</div><div><div class="res-name">Looker Studio Tutorial</div><div class="res-plat">YouTube · Google</div></div></div>
+      <div class="res-badges"><span class="rbadge rb-free">Miễn phí</span><span class="rbadge rb-vi">Tiếng Việt</span><span class="rbadge rb-beg">Beginner</span></div>
+      <div class="res-desc">Tìm "Looker Studio tutorial 2025 tiếng Việt". Chỉ cần 3 video để dùng được cơ bản.</div>
+      <div class="res-bottom"><div class="res-ptag">▸ Phase 1 Tuần 3</div><a class="res-btn" href="https://youtube.com/results?search_query=looker+studio+tutorial+ti%E1%BA%BFng+vi%E1%BB%87t+2025" target="_blank">Tìm trên YouTube <span>→</span></a></div>
+    </div>
+  </div>
+
+  <div class="res-panel" id="tab2">
+    <div class="res-card">
+      <div class="res-top"><div class="res-icon">🧠</div><div><div class="res-name">Prompt Engineering Guide</div><div class="res-plat">docs.anthropic.com · Anthropic</div></div></div>
+      <div class="res-badges"><span class="rbadge rb-free">Miễn phí</span><span class="rbadge rb-en">Tiếng Anh</span><span class="rbadge rb-mid">Intermediate</span></div>
+      <div class="res-desc">Tài liệu chính thức từ Anthropic. Dùng Claude dịch từng phần. Đây là thứ tạo ra sự khác biệt với 90% người làm AI.</div>
+      <div class="res-bottom"><div class="res-ptag">▸ Phase 2 Tuần 1 · Bắt buộc</div><a class="res-btn" href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank">Đọc ngay <span>→</span></a></div>
+    </div>
+    <div class="res-card">
+      <div class="res-top"><div class="res-icon">🤖</div><div><div class="res-name">Flowise AI</div><div class="res-plat">flowiseai.com · Tài liệu chính thức</div></div></div>
+      <div class="res-badges"><span class="rbadge rb-free">Miễn phí</span><span class="rbadge rb-en">Tiếng Anh</span><span class="rbadge rb-beg">Beginner</span></div>
+      <div class="res-desc">No-code LLM app builder. Tài liệu rõ ràng, có video demo. Dùng để build AI chatbot từ PDF tài liệu nội bộ.</div>
+      <div class="res-bottom"><div class="res-ptag">▸ Phase 2 Tuần 3–4</div><a class="res-btn" href="https://docs.flowiseai.com" target="_blank">Xem tài liệu <span>→</span></a></div>
+    </div>
+    <div class="res-card">
+      <div class="res-top"><div class="res-icon">⚡</div><div><div class="res-name">n8n Documentation</div><div class="res-plat">docs.n8n.io · Self-host workflow</div></div></div>
+      <div class="res-badges"><span class="rbadge rb-free">Miễn phí</span><span class="rbadge rb-en">Tiếng Anh</span><span class="rbadge rb-mid">Intermediate</span></div>
+      <div class="res-desc">Mạnh hơn Make.com, client quốc tế ưa chuộng. Docs tốt, có nhiều workflow templates có sẵn.</div>
+      <div class="res-bottom"><div class="res-ptag">▸ Phase 2 Tuần 5–6</div><a class="res-btn" href="https://docs.n8n.io" target="_blank">Xem tài liệu n8n <span>→</span></a></div>
+    </div>
+  </div>
+
+  <div class="res-panel" id="tab3">
+    <div class="res-card">
+      <div class="res-top"><div class="res-icon">👥</div><div><div class="res-name">Make.com Community</div><div class="res-plat">community.make.com</div></div></div>
+      <div class="res-badges"><span class="rbadge rb-free">Miễn phí</span><span class="rbadge rb-en">Tiếng Anh</span></div>
+      <div class="res-desc">Forum chính thức. Bị stuck thì search ở đây trước khi hỏi Claude. 90% vấn đề đã có người hỏi rồi.</div>
+      <div class="res-bottom"><div class="res-ptag">▸ Liên tục · Tìm giải pháp khi stuck</div><a class="res-btn" href="https://community.make.com" target="_blank">Vào Community <span>→</span></a></div>
+    </div>
+    <div class="res-card">
+      <div class="res-top"><div class="res-icon">🇻🇳</div><div><div class="res-name">FB Group Automation Vietnam</div><div class="res-plat">Facebook · Cộng đồng VN</div></div></div>
+      <div class="res-badges"><span class="rbadge rb-free">Miễn phí</span><span class="rbadge rb-vi">Tiếng Việt</span></div>
+      <div class="res-desc">Cộng đồng automation tiếng Việt. Tìm client nội địa đầu tiên tại đây. Offer tư vấn miễn phí 30 phút.</div>
+      <div class="res-bottom"><div class="res-ptag">▸ Phase 3 · Tìm lead đầu tiên</div><a class="res-btn" href="https://www.facebook.com/groups/automation.vietnam" target="_blank">Vào Group <span>→</span></a></div>
+    </div>
+    <div class="res-card">
+      <div class="res-top"><div class="res-icon">🏆</div><div><div class="res-name">Zapier Community</div><div class="res-plat">community.zapier.com</div></div></div>
+      <div class="res-badges"><span class="rbadge rb-free">Miễn phí</span><span class="rbadge rb-en">Tiếng Anh</span></div>
+      <div class="res-desc">Cộng đồng automation lớn nhất. Nhiều idea demo hay, pattern workflow thực tế từ người dùng thật.</div>
+      <div class="res-bottom"><div class="res-ptag">▸ Liên tục · Lấy ý tưởng demo</div><a class="res-btn" href="https://community.zapier.com" target="_blank">Vào Community <span>→</span></a></div>
+    </div>
+  </div>
+
+  <div class="res-panel" id="tab4">
+    <div class="res-card">
+      <div class="res-top"><div class="res-icon">🏅</div><div><div class="res-name">Google Data Analytics Certificate</div><div class="res-plat">coursera.org · Google Career</div></div></div>
+      <div class="res-badges"><span class="rbadge rb-free">Audit miễn phí</span><span class="rbadge rb-en">Tiếng Anh</span><span class="rbadge rb-mid">Intermediate</span></div>
+      <div class="res-desc">Nếu muốn CV thêm uy tín — Google Career Certificate về Data Analytics. Audit miễn phí để học. $50 nếu muốn cert ghi LinkedIn. Được MNC nhận diện rất tốt.</div>
+      <div class="res-bottom"><div class="res-ptag">▸ Phase 2–3 · Tùy chọn CV</div><a class="res-btn" href="https://www.coursera.org/professional-certificates/google-data-analytics" target="_blank">Audit miễn phí <span>→</span></a></div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- ═══════ CHECKLIST ═══════ -->
+<section class="section" id="checklist">
+  <p class="section-tag">Theo dõi tiến độ</p>
+  <h2 class="section-title">Checklist<br>3 Phase</h2>
+
+  <p class="reveal" style="color:var(--text-dim);margin-bottom:32px;font-size:12.5px;">Click vào từng mục để đánh dấu hoàn thành. Tiến độ được lưu trên trình duyệt.</p>
+
+  <div class="phase-section reveal">
+    <div class="phase-section-title"><div class="dot" style="background:var(--accent)"></div>Phase 1 — Nền tảng Automation</div>
+    <div class="checklist" id="cl1">
+      <div class="ci" onclick="toggleCheck(this,'cl1',0)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Tạo tài khoản Make.com miễn phí</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl1',1)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Xem xong 5 video Make.com tutorial tiếng Việt</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl1',2)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Workflow Google Form → Sheets → Gmail chạy được</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl1',3)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Dashboard Looker Studio kết nối Sheets, có 3 chart</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl1',4)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Demo #1 hoàn chỉnh — quay video 60 giây</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl1',5)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Đăng bài LinkedIn đầu tiên có video demo</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl1',6)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Demo #2 — KPI workflow từ kinh nghiệm DKSH</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl1',7)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">AI (Claude API) tích hợp vào Make.com workflow</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl1',8)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">✅ Checkpoint: 1 demo có phản hồi thật trên LinkedIn</div></div>
+    </div>
+  </div>
+
+  <div class="phase-section reveal">
+    <div class="phase-section-title"><div class="dot" style="background:var(--violet)"></div>Phase 2 — AI Integration</div>
+    <div class="checklist" id="cl2">
+      <div class="ci" onclick="toggleCheck(this,'cl2',0)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Đọc xong Prompt Engineering Guide, thực hành 10 prompt</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl2',1)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Demo #2 nâng cấp với AI thông minh hơn</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl2',2)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Cài và dùng được Flowise — có chatbot từ tài liệu riêng</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl2',3)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Biết dùng n8n, xây được 1 workflow cơ bản</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl2',4)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Demo #3 — AI categorization system hoàn thành</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl2',5)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Demo #4 — industry-specific cho Pharma/FMCG</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl2',6)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">✅ Checkpoint: 1 demo có người nhắn tin hỏi thêm</div></div>
+    </div>
+  </div>
+
+  <div class="phase-section reveal">
+    <div class="phase-section-title"><div class="dot" style="background:var(--amber)"></div>Phase 3 — Freelance & Thu nhập thật</div>
+    <div class="checklist" id="cl3">
+      <div class="ci" onclick="toggleCheck(this,'cl3',0)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Profile Upwork active, có bio + portfolio</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl3',1)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Fiverr gig published và active</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl3',2)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Đã reach out 5 người trong network cũ ở VN</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl3',3)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">LinkedIn post đều 2 lần/tuần trong 1 tháng</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl3',4)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Freelance dự án #1 hoàn thành, có payment thật</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl3',5)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Freelance dự án #2 hoàn thành</div></div>
+      <div class="ci" onclick="toggleCheck(this,'cl3',6)"><div class="cbox"><span class="cmark">✓</span></div><div class="ctext">Có ít nhất 1 retainer client (3–5 triệu/tháng)</div></div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- ═══════ RULES ═══════ -->
+<section class="section">
+  <p class="section-tag">Đọc lại mỗi tuần</p>
+  <h2 class="section-title">8 Nguyên tắc<br>vàng</h2>
+
+  <div class="rules reveal">
+    <div class="rule">
+      <div class="rule-n">01</div>
+      <div class="rule-t">Mỗi tuần phải có <strong>1 output hữu hình</strong> — workflow chạy được, video demo, bài đăng. Không có output = tuần đó coi như không học.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-n">02</div>
+      <div class="rule-t"><strong>Học 1 tool đến khi làm được việc thật</strong> rồi mới sang tool tiếp. Phase 1: chỉ Make.com 2 tuần đầu — không vội. Biết 1 tool sâu hơn biết 5 tool nông.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-n">03</div>
+      <div class="rule-t">Bị stuck thì <strong>hỏi ngay</strong> — hỏi Claude, hỏi group, hỏi YouTube. Không ngồi tự mò quá 30 phút với 1 vấn đề. Thời gian là thứ quý nhất.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-n">04</div>
+      <div class="rule-t">Dùng <strong>data thật từ cuộc sống mình</strong> — nghiên cứu khoa học, kinh nghiệm DKSH. Workflow thật &gt; workflow demo giả. Client cảm nhận được ngay.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-n">05</div>
+      <div class="rule-t"><strong>Đừng chỉ dựa vào Upwork</strong> — tìm client nội địa VN song song. Network cũ DKSH, FB group, LinkedIn DM. Client VN dễ convert hơn trong 6 tháng đầu.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-n">06</div>
+      <div class="rule-t"><strong>LinkedIn là bắt buộc</strong> — không cần hay, không cần nhiều like. Cần đều. Recruiter và client tìm thấy bạn qua đây. 2 bài/tuần, mỗi bài 100–200 từ là đủ.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-n">07</div>
+      <div class="rule-t">Freelance project đầu tiên: <strong>chấp nhận lấy ít hoặc miễn phí</strong> để có case study thật. Reputation &gt; tiền ngắn hạn. 1 case study thật &gt; 10 demo không có client.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-n">08</div>
+      <div class="rule-t">Tiếng Anh: <strong>30 phút/ngày tập trung vào viết</strong>. Dùng Claude sửa proposal trước khi gửi. Không cần hoàn hảo — cần đủ để client tin tưởng bấm hire.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="footer-quote">"Mỗi tuần một output. Mỗi output một bước gần hơn."</p>
+  <p class="footer-name">Đào Quang Phúc · Process Automation & AI Workflow Specialist · 2026</p>
+  <p style="color:var(--border2);font-size:11px;margin-top:14px;letter-spacing:0.12em;">Khi cần hướng dẫn bất kỳ bước nào — hỏi Claude tại claude.ai</p>
+</footer>
+
+<script>
+// Cursor glow
+const cg = document.getElementById('cg');
+document.addEventListener('mousemove', e => {
+  cg.style.left = e.clientX + 'px';
+  cg.style.top  = e.clientY + 'px';
+});
+
+// Progress bar + nav
+window.addEventListener('scroll', () => {
+  const d = document.documentElement;
+  const s = d.scrollTop || document.body.scrollTop;
+  const h = d.scrollHeight - d.clientHeight;
+  document.getElementById('progress').style.width = (s/h*100) + '%';
+  document.getElementById('nav').classList.toggle('show', s > window.innerHeight * 0.4);
+});
+
+// Checklist with localStorage
+function toggleCheck(el, listId, idx) {
+  el.classList.toggle('done');
+  const key = listId + '_' + idx;
+  localStorage.setItem(key, el.classList.contains('done') ? '1' : '0');
+}
+
+// Restore checklist state
+['cl1','cl2','cl3'].forEach(listId => {
+  const items = document.getElementById(listId).querySelectorAll('.ci');
+  items.forEach((item, idx) => {
+    if (localStorage.getItem(listId+'_'+idx) === '1') item.classList.add('done');
+  });
+});
+
+// Tabs
+function switchTab(id, btn) {
+  document.querySelectorAll('.res-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.res-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Reveal on scroll
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
